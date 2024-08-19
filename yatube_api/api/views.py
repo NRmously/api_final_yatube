@@ -2,7 +2,12 @@ from rest_framework import filters, permissions, viewsets, mixins
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import LimitOffsetPagination
 
-import api.serializers as serializers
+from api.serializers import (
+    GroupSerializer,
+    PostSerializer,
+    CommentSerializer,
+    FollowSerializer,
+)
 from api.permissions import IsAuthorOrReadOnly
 from posts.models import Group, Post
 
@@ -13,14 +18,14 @@ API_PERMISSIONS = (permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly)
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
     """ViewSet для модели Group."""
 
-    serializer_class = serializers.GroupSerializer
+    serializer_class = GroupSerializer
     queryset = Group.objects.all()
 
 
 class PostViewSet(viewsets.ModelViewSet):
     """ViewSet для модели Post."""
 
-    serializer_class = serializers.PostSerializer
+    serializer_class = PostSerializer
     permission_classes = API_PERMISSIONS
     pagination_class = LimitOffsetPagination
     queryset = Post.objects.select_related('author')
@@ -32,7 +37,7 @@ class PostViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     """ViewSet для модели Comment."""
 
-    serializer_class = serializers.CommentSerializer
+    serializer_class = CommentSerializer
     permission_classes = API_PERMISSIONS
 
     def get_post(self):
@@ -50,7 +55,7 @@ class FollowViewSet(
 ):
     """ViewSet для модели Follow."""
 
-    serializer_class = serializers.FollowSerializer
+    serializer_class = FollowSerializer
     permission_classes = (permissions.IsAuthenticated,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('following__username',)
